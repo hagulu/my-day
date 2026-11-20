@@ -1,0 +1,101 @@
+.calendar {
+  padding: clamp(10px, 2.2vw, 24px);
+  font-size: 1rem;
+  letter-spacing: normal;
+}
+
+.calendar-toolbar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(12px, 1.8vw, 22px);
+  margin: 2px 0 clamp(14px, 1.6vw, 20px);
+}
+
+.calendar-toolbar h2 {
+  min-width: 8ch;
+  text-align: center;
+  font-size: clamp(1.125rem, 2vw, 1.5rem);
+  white-space: nowrap;
+}
+
+.calendar-toolbar button {
+  width: 44px;
+  height: 44px;
+  border: 1px solid #dde4ce;
+  border-radius: 50%;
+  background: #eef1e3;
+  color: var(--green);
+  font: inherit;
+  font-size: 1.375rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.calendar-toolbar button:hover { background: #e3ead4; }
+.calendar-toolbar button:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
+
+.calendar-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid #ebe6da;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.calendar-table th {
+  padding: 8px 0;
+  font-size: .875rem;
+  background: #eef1e5;
+  color: var(--green);
+}
+
+.calendar-table td {
+  height: clamp(60px, 6.6vw, 86px);
+  padding: clamp(4px, .75vw, 9px);
+  vertical-align: top;
+  border-top: 1px solid #ebe6da;
+}
+
+.calendar-table td + td { border-left: 1px solid #ebe6da; }
+.calendar-table .calendar-empty { background: #f7f4ed; }
+.calendar-table time { margin: 0; color: #454940; font-weight: 600; font-size: .875rem; }
+.calendar-table th:first-child, .calendar-table td:first-child time { color: #995547; }
+.calendar-table th:last-child, .calendar-table td:last-child time { color: #4b6583; }
+
+.calendar-table td.calendar-holiday time,
+.calendar-holiday-name { color: #a83232; }
+
+.calendar-holiday-name {
+  margin-top: 4px;
+  font-size: .8125rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.calendar-entries {
+  display: grid;
+  gap: 4px;
+  list-style: none;
+  padding: 0;
+  margin-top: 6px;
+}
+
+.calendar-entry {
+  padding: 3px 6px;
+  border-radius: 7px;
+  font-size: .8125rem;
+  line-height: 1.35;
+}
+
+.calendar-entry--task { background: #e7eed9; color: #36512e; }
+.calendar-entry--diary { background: #f7e7da; color: #75472e; }
+.calendar-entry-type { display: block; font-size: .75rem; font-weight: 700; }
+
+@media (max-width: 540px) {
+  .calendar-page { padding-inline: 10px; }
+  .calendar-entry { padding: 3px; }
+  .calendar-table td { padding-inline: 3px; }
+}

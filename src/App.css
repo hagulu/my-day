@@ -1,0 +1,199 @@
+.day {
+  --green: #28462a;
+  --muted: #686258;
+  width: min(calc(100% - clamp(24px, 7vw, 96px)), 1080px);
+  margin: clamp(16px, 4vw, 56px) auto;
+  border-radius: clamp(18px, 2.2vw, 28px);
+  background: #fcf9f3;
+  box-shadow: 0 10px 36px #60451910;
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px clamp(18px, 3vw, 36px);
+  border-bottom: 1px solid #efebe2;
+}
+
+.brand, .menu { display: flex; align-items: center; }
+.brand {
+  gap: 10px;
+  color: var(--green);
+  font-size: clamp(1.125rem, 2.2vw, 1.5rem);
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.menu {
+  gap: clamp(4px, .9vw, 12px);
+  list-style: none;
+  padding: 0;
+  color: #414646;
+  font-size: clamp(.875rem, 1.2vw, .9375rem);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.menu li { min-width: 52px; padding: 8px 10px; text-align: center; }
+.menu li:has(a) { padding: 0; }
+.menu a {
+  display: block;
+  padding: 8px 11px;
+  color: inherit;
+  text-decoration: none;
+}
+.menu a:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+.menu [aria-current="page"] {
+  border-radius: 50px;
+  color: var(--green);
+  background: #e9eddb;
+}
+
+main { padding: clamp(24px, 3.3vw, 42px) clamp(14px, 3vw, 36px) clamp(28px, 4.3vw, 56px); }
+
+h1 {
+  margin: 0 0 clamp(20px, 2.5vw, 32px);
+  color: var(--green);
+  font-size: clamp(1.75rem, 3.3vw, 2.375rem);
+  line-height: 1.25;
+  letter-spacing: -.015em;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: minmax(0, .81fr) minmax(0, 1fr);
+  grid-template-areas: 'weather diary' 'tasks diary';
+  gap: clamp(12px, 1.8vw, 22px);
+}
+
+.card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: clamp(18px, 2.25vw, 28px);
+  border: 1px solid #eee9df;
+  border-radius: clamp(16px, 2vw, 22px);
+  background: #fcfaf6;
+  box-shadow: 0 4px 14px #5943200b, 0 1px 2px #59432008;
+  font-size: clamp(1rem, 1.5vw, 1.125rem);
+  line-height: 1.52;
+  letter-spacing: -.015em;
+}
+
+h2, h3 { font-size: 1.125em; line-height: 1.25; }
+h2 { color: var(--green); }
+time { display: block; margin-top: .55em; color: var(--muted); }
+
+.weather {
+  grid-area: weather;
+  min-height: clamp(146px, 15vw, 174px);
+  background: radial-gradient(ellipse at 100% 0%, #e1e8d3, transparent 46%), #fcfaf6;
+}
+
+.conditions { display: flex; align-items: center; margin-top: 1.32em; font-weight: 600; }
+.conditions span { display: flex; align-items: center; justify-content: center; gap: clamp(.25em, 1vw, .52em); flex: 4; }
+.conditions span:first-child { justify-content: flex-start; flex: 2.65; }
+.conditions span:last-child { justify-content: flex-end; flex: 2.4; white-space: nowrap; padding-right: .24em; }
+.conditions span + span { border-left: 2px solid #ebe7de; }
+
+.tasks { grid-area: tasks; min-height: clamp(104px, 11vw, 126px); }
+.tasks p { margin-top: .66em; font-weight: 600; }
+
+.diary {
+  grid-area: diary;
+  background: radial-gradient(ellipse 47% 48% at 100% 0%, #e6ebd7, transparent 100%), #fcfaf6;
+}
+.diary article { margin-top: 1.35em; }
+.diary p { margin-top: .85em; color: var(--muted); line-height: 1.65; }
+
+.sprout { position: relative; display: inline-block; flex: none; width: 1.36em; height: 1.24em; }
+.sprout::after { content: ''; position: absolute; bottom: 0; left: 49%; width: 6%; height: 43%; background: #829f61; }
+.sprout i { position: absolute; width: 49%; height: 72%; border: 1px solid #819e61; background: linear-gradient(135deg, #8eab69, #b6c794); }
+.sprout i:first-child { top: 12%; left: 0; border-radius: 5% 95% 8% 90%; transform: rotate(-6deg); }
+.sprout i:last-child { right: 0; border-radius: 95% 8% 90% 5%; transform: rotate(-7deg); }
+
+.cloud, .hill, .branch { position: absolute; z-index: -1; pointer-events: none; }
+
+.cloud {
+  top: 12%;
+  right: -4%;
+  width: 37%;
+  height: 27%;
+  background:
+    radial-gradient(circle at 63% 95%, #fcfaf6 0 48%, transparent 49%),
+    radial-gradient(circle at 31% 96%, #fcfaf6 0 36%, transparent 37%),
+    radial-gradient(circle at 86% 100%, #fcfaf6 0 27%, transparent 28%);
+  mask-image: linear-gradient(#000 48%, transparent);
+}
+
+.pin {
+  flex: none;
+  position: relative;
+  width: .79em;
+  height: .79em;
+  margin: -.17em .08em 0;
+  border-radius: 50% 50% 50% 8%;
+  background: #8a9d75;
+  transform: rotate(-45deg);
+}
+.pin::after { content: ''; position: absolute; inset: 29%; border-radius: 50%; background: #fcfaf6; }
+.weather-icon { flex: none; font: normal 1.4em/1 'Segoe UI Symbol', sans-serif; }
+.weather-icon.sun { color: #ffbd28; font-size: 1.6em; }
+.weather-icon.cloudy { color: #687e76; }
+.weather-icon.rain { color: #4f7297; }
+.weather-message { margin-top: 1.32em; color: var(--muted); font-size: .85em; }
+
+.hill {
+  right: -3%;
+  bottom: -30%;
+  width: 61%;
+  height: 53%;
+  border-radius: 76% 20% 0 0;
+  transform: rotate(-13deg);
+  background: linear-gradient(135deg, #f4f4e8, #e9ecd8);
+}
+.hill .sprout { position: absolute; top: -43%; right: 17%; font-size: 1.5em; transform: rotate(13deg); opacity: .74; }
+
+.branch { top: -2%; right: 4%; width: 20%; height: 30%; opacity: .56; }
+.branch::before {
+  content: '';
+  position: absolute;
+  right: 3%;
+  top: 0;
+  width: 76%;
+  height: 69%;
+  border-right: 3px solid #92aa75;
+  border-radius: 0 0 100% 0;
+  transform: skewX(-20deg);
+}
+.branch i {
+  position: absolute;
+  width: 28%;
+  height: 18%;
+  border-radius: 100% 0 100% 0;
+  background: linear-gradient(135deg, #a3b783, #dbe4ca);
+}
+.branch i:nth-child(1) { top: 15%; right: 34%; transform: rotate(20deg); }
+.branch i:nth-child(2) { top: 30%; right: 0; transform: rotate(104deg); }
+.branch i:nth-child(3) { top: 50%; right: 18%; transform: rotate(-48deg); }
+.branch i:nth-child(4) { top: 65%; right: 48%; transform: rotate(-50deg); }
+.branch i:nth-child(5) { top: 54%; right: 67%; transform: rotate(-9deg); }
+.branch i:nth-child(6) { top: 84%; right: 68%; transform: rotate(-34deg); }
+
+@media (max-width: 700px) {
+  .cards { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'weather' 'tasks' 'diary'; }
+  .brand { gap: 7px; }
+  .header { padding-inline: 15px; gap: 6px; }
+  .menu { gap: 2px; }
+  .menu li { min-width: 0; padding-inline: 8px; }
+  .conditions { max-width: 27rem; }
+}
+
+@media (max-width: 420px) {
+  .header { flex-wrap: wrap; row-gap: 10px; }
+  .header nav { width: 100%; }
+  .menu { justify-content: space-between; }
+}
