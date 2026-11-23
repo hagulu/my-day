@@ -6,6 +6,7 @@ import { diaryDate, readEntries } from './diaryData'
 import type { Entry } from './diaryData'
 import WeatherCard from './WeatherCard'
 import Tasks from './Tasks'
+import PopularBooks from './PopularBooks'
 import { dateKey, readTasks } from './taskData'
 
 const menu = [
@@ -124,6 +125,7 @@ function Home() {
           <RecentDiary />
         </section>
       </div>
+      <PopularBooks />
     </main>
   )
 }

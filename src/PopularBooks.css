@@ -1,0 +1,71 @@
+.popular-books {
+  margin-top: clamp(28px, 4vw, 44px);
+}
+
+.popular-books > h2 {
+  margin-bottom: clamp(12px, 1.8vw, 20px);
+  font-size: clamp(1.25rem, 2.35vw, 1.625rem);
+}
+
+.popular-books-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(6px, 1.8vw, 22px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.popular-book {
+  padding: clamp(6px, 1.4vw, 16px);
+  overflow-wrap: anywhere;
+}
+
+.popular-book-cover {
+  position: relative;
+  display: grid;
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+  place-items: center;
+  height: clamp(94px, 23vw, 230px);
+  padding: clamp(7px, 1.5vw, 16px);
+  border-radius: clamp(10px, 1.3vw, 14px);
+  background: linear-gradient(150deg, #eef0e4, #f1e8d9);
+}
+
+.popular-book-cover img {
+  display: block;
+  width: fit-content;
+  height: 100%;
+  max-width: 100%;
+  min-height: 0;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 5px #40351d35);
+}
+
+.popular-book-rank {
+  position: absolute;
+  z-index: 1;
+  top: clamp(3px, 1vw, 10px);
+  left: clamp(3px, 1vw, 10px);
+  padding: .15em .5em;
+  border-radius: 999px;
+  background: var(--green);
+  color: #fcfaf6;
+  font-size: clamp(.625rem, 1.35vw, .8125rem);
+  font-weight: 700;
+}
+
+.popular-book h3 {
+  margin: .75em .25em .3em;
+  color: var(--green);
+  font-size: clamp(.8125rem, 1.7vw, 1.125rem);
+}
+
+.popular-books p {
+  color: var(--muted);
+}
+
+.popular-book p {
+  margin-inline: .3em;
+  font-size: clamp(.75rem, 1.5vw, .9375rem);
+}
