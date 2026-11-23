@@ -66,6 +66,13 @@ export async function readEntries(signal: AbortSignal, limit?: number) {
   return (data ?? []).map(toEntry)
 }
 
+export async function readDiaryDates(start: string, end: string, signal: AbortSignal) {
+  const { data, error } = await diaryTable().select('id,title,entry_date')
+    .gte('entry_date', start).lt('entry_date', end).order('entry_date').order('id').abortSignal(signal)
+  checkError(error, '캘린더의 일기를 불러오지 못했어요.')
+  return data ?? []
+}
+
 export async function readEntry(id: string, signal: AbortSignal) {
   if (!/^[\da-f]{8}(?:-[\da-f]{4}){3}-[\da-f]{12}$/i.test(id)) return null
   const { data, error } = await diaryTable().select('*').eq('id', id).abortSignal(signal).maybeSingle()

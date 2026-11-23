@@ -93,6 +93,11 @@
 .calendar-entry--task { background: #e7eed9; color: #36512e; }
 .calendar-entry--diary { background: #f7e7da; color: #75472e; }
 .calendar-entry-type { display: block; font-size: .75rem; font-weight: 700; }
+.calendar-entry { overflow-wrap: anywhere; }
+.calendar-entry a, .calendar-day-link { color: inherit; text-decoration: none; }
+.calendar-day-link { display: inline-block; }
+.calendar-entry a { display: block; }
+.calendar-entry a:hover, .calendar-day-link:hover { text-decoration: underline; }
 
 @media (max-width: 540px) {
   .calendar-page { padding-inline: 10px; }

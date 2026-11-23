@@ -5,8 +5,9 @@ import Diary from './Diary'
 import { diaryDate, readEntries } from './diaryData'
 import type { Entry } from './diaryData'
 import WeatherCard from './WeatherCard'
+import Tasks from './Tasks'
+import { dateKey, readTasks } from './taskData'
 
-const tasks = { total: 5, completed: 3 }
 const menu = [
   { path: '/', label: '홈' },
   { path: '/tasks', label: '할 일' },
@@ -28,7 +29,7 @@ export default function App() {
   } else if (path === '/calendar') {
     page = <Calendar />
   } else if (path === '/tasks') {
-    page = <main><h1>할 일</h1><TaskSummary /></main>
+    page = <Tasks />
   } else {
     page = <Home />
   }
@@ -51,11 +52,33 @@ export default function App() {
 }
 
 function TaskSummary() {
+  const [summary, setSummary] = useState<{ total: number; completed: number }>()
+  const [error, setError] = useState('')
+  const [today] = useState(() => dateKey(new Date()))
+
+  useEffect(() => {
+    const controller = new AbortController()
+    const tomorrow = new Date(today + 'T00:00:00')
+    tomorrow.setDate(tomorrow.getDate() + 1)
+    void readTasks(controller.signal, today, dateKey(tomorrow)).then(tasks => {
+      if (!controller.signal.aborted) {
+        setSummary({ total: tasks.length, completed: tasks.filter(task => task.completed).length })
+      }
+    }).catch((cause: unknown) => {
+      if (!controller.signal.aborted) {
+        setError(cause instanceof Error ? cause.message : '할 일을 불러오지 못했어요.')
+      }
+    })
+    return () => controller.abort()
+  }, [today])
+
   return (
     <section className="card tasks" aria-labelledby="tasks-heading">
       <div className="hill" aria-hidden="true"><Sprout /></div>
-      <h2 id="tasks-heading">할 일</h2>
-      <p>{tasks.total}개 중 {tasks.completed}개 완료</p>
+      <h2 id="tasks-heading"><a className="home-entry" href={'/tasks?date=' + today}>오늘의 할 일</a></h2>
+      {error ? <p role="alert">{error}</p> : summary
+        ? <p>{summary.total}개 중 {summary.completed}개 완료</p>
+        : <p role="status">할 일을 불러오는 중이에요.</p>}
     </section>
   )
 }

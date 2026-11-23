@@ -1,30 +1,27 @@
 import { useEffect, useState } from 'react'
 import { getKoreanHolidays } from './koreanHolidays'
+import { readDiaryDates } from './diaryData'
+import { dateKey, readTasks } from './taskData'
+import type { Task } from './taskData'
 import './Calendar.css'
 
 const weekdays = ['일', '월', '화', '수', '목', '금', '토']
 const weekdayNames = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일']
 
-type Entry = { day: number; kind: 'task' | 'diary'; title: string }
-
-const entries: Entry[] = [
-  { day: 3, kind: 'task', title: '이번 달 계획 세우기' },
-  { day: 7, kind: 'diary', title: '느긋한 오후' },
-  { day: 12, kind: 'task', title: '도서관 책 반납하기' },
-  { day: 18, kind: 'task', title: '친구와 카페 가기' },
-  { day: 18, kind: 'diary', title: '오늘도 좋은 하루' },
-  { day: 23, kind: 'task', title: '저녁 산책하기' },
-  { day: 26, kind: 'diary', title: '기억하고 싶은 순간' },
-]
+type DiaryDates = Awaited<ReturnType<typeof readDiaryDates>>
+type MonthResult<T> = { month: string; entries: T; error?: string }
 
 function firstOfMonth(date: Date, offset = 0) {
   return new Date(date.getFullYear(), date.getMonth() + offset, 1)
 }
 
 export default function Calendar() {
-  const [sampleMonth] = useState(() => firstOfMonth(new Date()))
-  const [month, setMonth] = useState(sampleMonth)
+  const [month, setMonth] = useState(() => firstOfMonth(new Date()))
+  const [tasks, setTasks] = useState<MonthResult<Task[]>>()
+  const [diaries, setDiaries] = useState<MonthResult<DiaryDates>>()
   const year = month.getFullYear()
+  const monthStart = dateKey(month)
+  const monthEnd = dateKey(firstOfMonth(month, 1))
   const [holidays, setHolidays] = useState<{
     year: number
     dates: Awaited<ReturnType<typeof getKoreanHolidays>>
@@ -41,12 +38,41 @@ export default function Calendar() {
 
     return () => { active = false }
   }, [year])
+
+  useEffect(() => {
+    let controller: AbortController
+    function loadMonth() {
+      controller?.abort()
+      controller = new AbortController()
+      const { signal } = controller
+      void readTasks(signal, monthStart, monthEnd).then(entries => {
+        if (!signal.aborted) setTasks({ month: monthStart, entries })
+      }).catch(() => {
+        if (!signal.aborted) setTasks({ month: monthStart, entries: [], error: '캘린더의 할 일을 불러오지 못했어요.' })
+      })
+      void readDiaryDates(monthStart, monthEnd, signal).then(entries => {
+        if (!signal.aborted) setDiaries({ month: monthStart, entries })
+      }).catch(() => {
+        if (!signal.aborted) setDiaries({ month: monthStart, entries: [], error: '캘린더의 일기를 불러오지 못했어요.' })
+      })
+    }
+    function refreshAfterBack(event: PageTransitionEvent) {
+      if (event.persisted) loadMonth()
+    }
+    loadMonth()
+    window.addEventListener('pageshow', refreshAfterBack)
+    return () => {
+      controller.abort()
+      window.removeEventListener('pageshow', refreshAfterBack)
+    }
+  }, [monthStart, monthEnd])
+
   const monthNumber = month.getMonth() + 1
   const leadingDays = month.getDay()
   const daysInMonth = new Date(year, monthNumber, 0).getDate()
   const weekCount = Math.ceil((leadingDays + daysInMonth) / 7)
-  const monthEntries = month.getTime() === sampleMonth.getTime() ? entries : []
-  const monthIso = String(monthNumber).padStart(2, '0')
+  const monthTasks = tasks?.month === monthStart ? tasks : undefined
+  const monthDiaries = diaries?.month === monthStart ? diaries : undefined
 
   function moveMonth(offset: number) {
     setMonth(previous => firstOfMonth(previous, offset))
@@ -65,6 +91,9 @@ export default function Calendar() {
             <span aria-hidden="true">›</span>
           </button>
         </div>
+        {(!monthTasks || !monthDiaries) && <p role="status">일정을 불러오는 중이에요.</p>}
+        {monthTasks?.error && <p role="alert">{monthTasks.error}</p>}
+        {monthDiaries?.error && <p role="alert">{monthDiaries.error}</p>}
         <table className="calendar-table" aria-labelledby="calendar-month">
           <thead>
             <tr>
@@ -82,20 +111,33 @@ export default function Calendar() {
                     return <td key={weekday} className="calendar-empty" />
                   }
 
-                  const dayEntries = monthEntries.filter(entry => entry.day === day)
-                  const date = year + '-' + monthIso + '-' + String(day).padStart(2, '0')
+                  const date = dateKey(new Date(year, month.getMonth(), day))
+                  const dayTasks = monthTasks?.entries.filter(task => task.task_date === date) ?? []
+                  const dayDiaries = monthDiaries?.entries.filter(entry => entry.entry_date === date) ?? []
                   const dayHolidays = holidays?.year === year ? holidays.dates.get(date) : undefined
 
                   return (
                     <td key={weekday} className={dayHolidays ? 'calendar-holiday' : undefined}>
-                      <time dateTime={date}>{day}</time>
+                      <a className="calendar-day-link" href={'/tasks?date=' + date} aria-label={date + ' 할 일'}>
+                        <time dateTime={date}>{day}</time>
+                      </a>
                       {dayHolidays?.map(name => <p className="calendar-holiday-name" key={name}>{name}</p>)}
-                      {dayEntries.length > 0 && (
+                      {(dayTasks.length > 0 || dayDiaries.length > 0) && (
                         <ul className="calendar-entries">
-                          {dayEntries.map(entry => (
-                            <li key={entry.title} className={'calendar-entry calendar-entry--' + entry.kind}>
-                              <span className="calendar-entry-type">{entry.kind === 'task' ? '할 일' : '일기'}</span>
-                              <span>{entry.title}</span>
+                          {dayTasks.map(task => (
+                            <li key={task.id} className="calendar-entry calendar-entry--task">
+                              <a href={'/tasks?date=' + date}>
+                                <span className="calendar-entry-type">{task.completed ? '완료' : '할 일'}</span>
+                                {task.completed ? <s>{task.title}</s> : task.title}
+                              </a>
+                            </li>
+                          ))}
+                          {dayDiaries.map(entry => (
+                            <li key={entry.id} className="calendar-entry calendar-entry--diary">
+                              <a href={'/diary/' + entry.id}>
+                                <span className="calendar-entry-type">일기</span>
+                                {entry.title}
+                              </a>
                             </li>
                           ))}
                         </ul>
